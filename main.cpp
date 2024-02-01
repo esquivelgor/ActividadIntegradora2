@@ -19,13 +19,15 @@ struct Graph {
     int start, end;
     int minCost = INT_MAX;
     vector<vector<int>> wt;
-    vector<int> final_path_minCost;
+    vector<int> minCostPath;
+	vector<int> curr_path;
     vector<bool> visited;
 
     Graph(int edges, int init, int end) : n(edges), start(init), end(end) {
         
         wt.resize(n, vector<int>(n));
-        final_path_minCost.resize(n + 1, int(n));
+		curr_path.resize(n+1, int(n));
+        minCostPath.resize(n + 1, int(n));
         visited.resize(n, bool(n));
 
         for (int i = 0; i < n; ++i) {
@@ -49,43 +51,44 @@ struct Graph {
     // --------------- Problem 2 - TSP ---------------
  
     // Find the minimum edge cost having an end at the vertex i
-    int firstMin(vector<vector<int>> adj, int i) {
+    int firstMin(int i) {
     	int min = INT_MAX;
     	for (int k=0; k<n; k++)
-    		if (adj[i][k]<min && i != k)
-    			min = adj[i][k];
+    		if (wt[i][k]<min && i != k)
+    			min = wt[i][k];
     	return min;
     }
 
     // Find the second minimum edge cost having an end at the vertex i
-    int secondMin(vector<vector<int>> adj, int i) {
+    int secondMin(int i) {
     	int first = INT_MAX, second = INT_MAX;
     	for (int j=0; j<n; j++) {
     		if (i == j)
     			continue;
 
-    		if (adj[i][j] <= first) {
+    		if (wt[i][j] <= first) {
     			second = first;
-    			first = adj[i][j];
-    		} else if (adj[i][j] <= second && adj[i][j] != first)
-    			second = adj[i][j];
+    			first = wt[i][j];
+    		} else if (wt[i][j] <= second && wt[i][j] != first)
+    			second = wt[i][j];
     	}
     	return second;
     }
 
-    void TSPRec(vector<vector<int>> adj, int curr_bound, int curr_weight, int level, vector<int> curr_path) {
-    	// if we reached level N it means we have covered all the nodes once
-    	if (level==n) {
+    void TSPRec(int curr_bound, int curr_weight, int node) {
+    	
+		// We are in the last node
+    	if (node==n) {
     		// check if there is an edge from last vertex in path back to the first vertex
-    		if (adj[curr_path[level-1]][curr_path[0]] != 0) {
+    		if (wt[curr_path[node-1]][curr_path[0]] != 0) {
     			// curr_res has the total weight of the solution we got
-    			int curr_res = curr_weight + adj[curr_path[level-1]][curr_path[0]];
+    			int curr_res = curr_weight + wt[curr_path[node-1]][curr_path[0]];
 
     			if (curr_res < minCost) {
                     for (int i=0; i<n; i++) {
-    	            	final_path_minCost[i] = curr_path[i];
+    	            	minCostPath[i] = curr_path[i];
     	            }
-                    final_path_minCost[n] = curr_path[0];
+                    minCostPath[n] = curr_path[0];
     				minCost = curr_res;
     			}
     		}
@@ -95,32 +98,32 @@ struct Graph {
     	// else iterate for all vertices
     	for (int i=0; i<n; i++) {
     		// Consider next vertex if it is not same (diagonal entry in adjacency matrix and not visited already)
-    		if (adj[curr_path[level-1]][i] != 0 && visited[i] == false) {
+    		if (wt[curr_path[node-1]][i] != 0 && visited[i] == false) {
     			int temp = curr_bound;
-    			curr_weight += adj[curr_path[level-1]][i];
+    			curr_weight += wt[curr_path[node-1]][i];
 
-    			// different computation of curr_bound for level 2 from the other levels
-    			if (level==1) {
-    			    curr_bound -= ((firstMin(adj, curr_path[level-1]) + firstMin(adj, i))/2);
+    			// different computation of curr_bound for node 2 from the other nodes
+    			if (node==1) {
+    			    curr_bound -= ((firstMin(curr_path[node-1]) + firstMin(i))/2);
     			} else {
-    			    curr_bound -= ((secondMin(adj, curr_path[level-1]) + firstMin(adj, i))/2);
+    			    curr_bound -= ((secondMin(curr_path[node-1]) + firstMin(i))/2);
                 }
     			
                 // If the sum of the weights are lower than the minCost, then check that tree
     			if (curr_bound + curr_weight < minCost) {
-    				curr_path[level] = i;
+    				curr_path[node] = i;
     				visited[i] = true;
 
-    				TSPRec(adj, curr_bound, curr_weight, level+1, curr_path);
+    				TSPRec(curr_bound, curr_weight, node+1);
     			}
 
     			// Else we have to prune the node by resetting all changes to curr_weight and curr_bound
-    			curr_weight -= adj[curr_path[level-1]][i];
+    			curr_weight -= wt[curr_path[node-1]][i];
     			curr_bound = temp;
 
     			// And reset the visited array
                 visited.assign(n, false);
-    			for (int j=0; j<=level-1; j++){ 
+    			for (int j=0; j<=node-1; j++){ 
     				visited[curr_path[j]] = true;
                 }
     		}
@@ -129,28 +132,24 @@ struct Graph {
     
     void TSP() {
 
-        vector<int> curr_path;
-        curr_path.resize(n+1, int(n));
-
-    	// Calculate initial lower bound for the root node and initialize the curr_path and visited array
     	int curr_bound = start;
-        curr_path.assign(n, -1);
+        curr_path.assign(n + 1, -1);
         visited.assign(n, 0);
 
     	// Compute initial bound
     	for (int i=0; i<n; i++) {
-    		curr_bound += (firstMin(wt, i) + secondMin(wt, i));
+    		curr_bound += (firstMin(i) + secondMin(i));
         }
 
-    	// Rounding off the lower bound to an integer
+    	// Rounding off to an integer
     	curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2;
 
     	// We start at vertex 1 so the first vertex in curr_path[] is 0
     	visited[0] = true;
     	curr_path[0] = 0;
 
-    	// Call to TSPRec for curr_weight equal to 0 and level 1
-    	TSPRec(wt, curr_bound, 0, 1, curr_path);
+    	// Call to TSPRec for curr_weight equal to 0 and node 1
+    	TSPRec(curr_bound, 0, 1);
     }
 };
 
@@ -172,7 +171,7 @@ int main() {
     Undirected_Graph.TSP();
     cout << "Minimum cost: " << Undirected_Graph.minCost << endl;
 	cout << "Path: ";
-    for(int i : Undirected_Graph.final_path_minCost) cout << i << " ";
+    for(int i : Undirected_Graph.minCostPath) cout << i << " ";
     cout << endl;
 
     cout << "-------------------------------------" << endl;
