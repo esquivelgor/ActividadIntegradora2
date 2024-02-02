@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include "TSP.h"
+#include "EdmondsKarp.h"
 
 using namespace std;
 
@@ -28,7 +29,6 @@ int main() {
 
     cout << "-------------------------------------" << endl;
     cout << "Problem 2" << endl;
-
     Undirected_Graph.TSP();
     cout << "Minimum cost: " << Undirected_Graph.minCost << endl;
 	cout << "Path: ";
@@ -37,6 +37,9 @@ int main() {
 
     cout << "-------------------------------------" << endl;
     cout << "Problem 3" << endl;
+    Directed_Graph.edmondsKarp();
+    cout << "Maximum flow from " << start << " to " << end << " is " << Directed_Graph.maxFlow << endl;
+    cout << "-------------------------------------" << endl;
 
 	return 0;
 }

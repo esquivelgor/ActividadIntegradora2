@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Graph.h"
+
 // --------------- Methods for problem 2 - TSP Algorithm B&B ---------------
 
 // Find the minimum edge cost having an end at the vertex i

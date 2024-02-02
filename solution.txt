@@ -2,7 +2,8 @@
 Problem 1
 -------------------------------------
 Problem 2
-Minimum cost: 291
-Path: 0 1 2 3 9 5 6 4 8 7 0 
+Minimum cost: 106
+Path: 0 1 2 6 7 3 8 5 4 0 
 -------------------------------------
 Problem 3
+Maximum flow from 5 to 7 is 2649
