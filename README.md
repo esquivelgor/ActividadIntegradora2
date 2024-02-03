@@ -1,9 +1,11 @@
- > Authors:
->> **Guillermo Esquivel Ortiz** - A01625621
->
->> **Jesus Castillo Cabello**  - A01382000
-> 
->> Date: 02/02/2024
+
+### Authors:
+**Guillermo Esquivel Ortiz** - A01625621
+
+**Jesus Castillo Cabello**  - A01382000
+
+Date: 02/02/2024
+____
 
 ### Descripción
 La empresa "InternetMáximo" ha empezado operaciones en la ciudad. Actualmente con poco personal y dinero inicial, así que requiere tomar decisiones inteligentes que le permitan entrar pronto en competencia con las empresas ya instaladas.
