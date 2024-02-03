@@ -1,18 +1,24 @@
+// =========================================================
+// File: EdmondsKarp.h
+// Authors:
+//  Guillermo Esquivel Ortiz - A01625621
+//  Jesus Castillo Cabello   - A01382000
+// Date: 02/02/2024
+// =========================================================
+
 #ifndef _EDMONDSKARP_H_
 #define _EDMONDSKARP_H_
 
-#include <cmath>
-#include <iostream>
 #include <queue>
-#include <utility>
-#include <vector>
 #include "Graph.h"
 
-inline int Graph::BFS(vector<int>& parent) {
+// --------------- Methods for problem 3 - Edmonds-Karp Algorithm ---------------
+
+inline int Graph::BFS(vector<int>& visited) {
     
-    parent.assign(n, -1);
-    parent[start] = -2;
-    queue<pair<int, int>> q; // (current_vertex, current_flow)
+    visited.assign(n, -1);
+    visited[start] = -2;
+    queue<pair<int, int>> q; // (node, flow)
     q.push({start, INT_MAX});
 
     while (!q.empty()) {
@@ -24,9 +30,12 @@ inline int Graph::BFS(vector<int>& parent) {
         int i = 0;
         for (int next : wt[current]) {
             
-            if ((next > 0) && (parent[i] == -1)) {
-                parent[i] = current;
+            // If connection existds and is not visited then
+            if ((next > 0) && (visited[i] == -1)) {
+                visited[i] = current;
+                // calculate the new flow
                 int new_flow = min(flow, wt[current][i]);
+                // if we have reached the sink, then return our new flow
                 if (i == end) {
                     return new_flow;
                 }
@@ -34,31 +43,27 @@ inline int Graph::BFS(vector<int>& parent) {
             }
             i++;
         }
-            
-                
-            
     }
     return 0;
 }
 
 inline void Graph::edmondsKarp(){
     
-    vector<int> parent(n);
+    vector<int> visited(n);
     int newFlow;
 
-    while((newFlow = BFS(parent))){
+    while((newFlow = BFS(visited))){
         maxFlow += newFlow;
         int current = end;
+        // Trace back the augmenting path and update residual capacities
         while (current != start) {
-            int prev = parent[current];
+            int prev = visited[current];
             wt[prev][current] -= newFlow;
             wt[current][prev] += newFlow;
             current = prev;
         }
     }
+    cout << "Maximum flow from " << start << " to " << end << " is " << maxFlow << endl;
 }
-
-
-
 
 #endif // _EDMONDSKARP_H_

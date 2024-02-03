@@ -1,3 +1,11 @@
+// =========================================================
+// File: Graph.h
+// Authors:
+//  Guillermo Esquivel Ortiz - A01625621
+//  Jesus Castillo Cabello   - A01382000
+// Date: 02/02/2024
+// =========================================================
+
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
@@ -12,9 +20,6 @@ struct Graph {
     Graph(int edges, int init, int end) : n(edges), start(init), end(end) {
         
         wt.resize(n, vector<int>(n));
-		curr_path.resize(n+1, int(n));
-        minCostPath.resize(n + 1, int(n));
-        visited.resize(n, bool(n));
 
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
@@ -23,48 +28,33 @@ struct Graph {
         }
     }
 
-    // --------------------------------- Structures ---------------------------------
+    // --------------------------------- Structures/Variables ---------------------------------
     int n;
     int start, end;
     vector<vector<int>> wt;
-    
-    // --------------- Problem 1 -  ---------------
 
     // --------------- Problem 2 - TSP Algorithm B&B ---------------
 	int minCost = INT_MAX;
-	vector<int> minCostPath;
-	vector<int> curr_path;
-    vector<bool> visited;
+    vector<int> minCostPath;
 
     // --------------- Problem 3 - Edmonds-Karp Algorithm ---------------
     int maxFlow = 0;
 
 	// --------------------------------- Methods ---------------------------------
-	void cout_Graph();
 
-	// --------------- Problem 1 -  ---------------
+	// --------------- Problem 1 - Prim Algorithm ---------------
+    void Prim();
 
 	// --------------- Problem 2 - TSP Algorithm B&B ---------------
 	void TSP();
-	void TSPRec(int curr_bound, int curr_weight, int node);
+	void TSPRec(int curr_bound, int curr_weight, int node, vector<int>& curr_path, vector<bool>& visited);
 	int firstMin(int i);
 	int secondMin(int i);
 
 	// --------------- Problem 3 - Edmonds-Karp Algorithm ---------------
     void edmondsKarp();
-    int BFS(vector<int>& parent);
+    int BFS(vector<int>& visited);
     
 };
-
-// --------------- Print function ---------------
-inline void Graph::cout_Graph() {
-    cout << "Matriz:" << endl;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            cout << wt[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
 
 #endif // _GRAPH_H_

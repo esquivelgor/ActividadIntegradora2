@@ -1,10 +1,20 @@
+// =========================================================
+// File: Prim.h
+// Authors:
+//  Guillermo Esquivel Ortiz - A01625621
+//  Jesus Castillo Cabello   - A01382000
+// Date: 02/02/2024
+// =========================================================
+
 #ifndef _Prim_H_
 #define _Prim_H_
 
-#include <iostream>
 #include "Graph.h"
+
+// --------------- Methods for problem 1 - Prim Algorithm ---------------
+
 //Get the minimum weight for non visited nodes
-int minKey(int weight[], bool visited[], int n)
+inline int minKey(int weight[], bool visited[], int n)
 {
 	// Initialize min value
 	int min = INT_MAX, min_index;
@@ -16,8 +26,7 @@ int minKey(int weight[], bool visited[], int n)
 	return min_index;
 }
 
-
-void Graph::Prim(){
+inline void Graph::Prim(){
     //n ya esta definida
     //arbol es el arbol que vamos contruyendo. tiene los nodos padre los indices
     //weight es elarreglo del peso minimo para llegar a cada nodo
@@ -61,6 +70,5 @@ void Graph::Prim(){
     for (int i = 1; i < n; i++)
     cout << "(" <<  arbol[i] << ", " << i << ")" << endl;
 }
-
 
 #endif 

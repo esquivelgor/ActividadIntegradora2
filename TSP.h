@@ -1,7 +1,14 @@
+// =========================================================
+// File: TSP.h
+// Authors:
+//  Guillermo Esquivel Ortiz - A01625621
+//  Jesus Castillo Cabello   - A01382000
+// Date: 02/02/2024
+// =========================================================
+
 #ifndef _TSP_H_
 #define _TSP_H_
 
-#include <iostream>
 #include "Graph.h"
 
 // --------------- Methods for problem 2 - TSP Algorithm B&B ---------------
@@ -30,7 +37,7 @@ inline int Graph::secondMin(int i) {
 	return second;
 }
 
-inline void Graph::TSPRec(int curr_bound, int curr_weight, int node) {
+inline void Graph::TSPRec(int curr_bound, int curr_weight, int node, vector<int>& curr_path, vector<bool>& visited) {
 	
 	// We are in the last node
 	if (node==n) {
@@ -65,7 +72,7 @@ inline void Graph::TSPRec(int curr_bound, int curr_weight, int node) {
 			if (curr_bound + curr_weight < minCost) {
 				curr_path[node] = i;
 				visited[i] = true;
-				TSPRec(curr_bound, curr_weight, node+1);
+				TSPRec(curr_bound, curr_weight, node+1, curr_path, visited);
 			}
 			// Else we have to prune the node by resetting all changes to curr_weight and curr_bound
 			curr_weight -= wt[curr_path[node-1]][i];
@@ -81,24 +88,30 @@ inline void Graph::TSPRec(int curr_bound, int curr_weight, int node) {
 	
 inline void Graph::TSP() {
 
-    	int curr_bound = start;
-        curr_path.assign(n + 1, -1);
-        visited.assign(n, 0);
+	vector<int> curr_path(n+1);
+    vector<bool> visited(n);
+	int curr_bound = start;
 
-    	// Compute initial bound
-    	for (int i=0; i<n; i++) {
-    		curr_bound += (firstMin(i) + secondMin(i));
-        }
+	minCostPath.resize(n+1, int(n));
+    curr_path.assign(n + 1, -1);
+    visited.assign(n, 0);
 
-    	// Rounding off to an integer
-    	curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2;
+    // Compute initial bound
+    for (int i=0; i<n; i++) {
+    	curr_bound += (firstMin(i) + secondMin(i));
+    }
+    // Rounding off to an integer
+    curr_bound = (curr_bound&1)? curr_bound/2 + 1 : curr_bound/2;
+    // We start at vertex 1 so the first vertex in curr_path[] is 0
+    visited[0] = true;
+    curr_path[0] = 0;
+    // Call to TSPRec for curr_weight equal to 0 and node 1
+    TSPRec(curr_bound, 0, 1, curr_path, visited);
 
-    	// We start at vertex 1 so the first vertex in curr_path[] is 0
-    	visited[0] = true;
-    	curr_path[0] = 0;
-
-    	// Call to TSPRec for curr_weight equal to 0 and node 1
-    	TSPRec(curr_bound, 0, 1);
+	cout << "Minimum cost: " << minCost << endl;
+	cout << "Path: ";
+    for(int i : minCostPath) cout << i << " ";
+	cout << endl;
 }
 
 #endif // _TSP_H_
